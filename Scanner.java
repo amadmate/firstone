@@ -1,3 +1,7 @@
+/**
+ * Created by Classdumper, User Peter Heusch
+ * Creation Date: 02.04.2019 09:18:47
+ */
 package aufgabe_23;
 
 import java.io.BufferedReader;
@@ -14,8 +18,8 @@ public class Scanner {
     private Object nextValue;
 
     public Scanner(InputStream arg02) {
-        // Roughly 1 lines of implementation
-        this(new InputStreamReader(arg02));
+       this(new InputStreamReader(arg02));
+
     }
 
     public Scanner(Reader arg02) {
@@ -31,165 +35,160 @@ public class Scanner {
     }
 
     private int getChar() throws IOException {
-        // Roughly 1 lines of implementation
         return readChar(false);
     }
 
     Object getValue() {
         // Roughly 1 lines of implementation
         return this.nextValue;
+
     }
 
-    Token scanToken() {
+   Token scanToken() {
         // Roughly 44 lines of implementation
         try {
-            int x = readChar(false);
-            StringBuilder sb = new StringBuilder();
-
-            switch (x) {
+            int nextchar = getChar();
+            while(Character.isWhitespace(nextchar)){
+                nextchar =getChar();
+            }
+            
+            switch (nextchar) {
                 case -1:
+                    
                     return null;
                 case '+':
-                    return Token.PLUS;                     
+                   return  Token.PLUS;
+                    
                 case '-':
-                    return Token.MINUS;
+                   return Token.MINUS;
+                    
                 case '/':
-                    return Token.SLASH;
+                   return this.nextToken = Token.SLASH;
+                    
                 case '*':
-                    return Token.STAR;
+                    return this.nextToken = Token.STAR;
+                    
                 case '(':
-                    return Token.OPEN;
+                   return this.nextToken = Token.OPEN;
+                    
                 case ')':
-                    return Token.CLOSE;
+                   return this.nextToken = Token.CLOSE;
+                    
                 case ';':
-                    return Token.END;
-                case ' ':
-                    return scanToken();
+                    return this.nextToken = Token.END;
                     
             }
-            if(Character.isDigit(x)) {
-                sb.append((char) x);
+               
+            if (Character.isDigit(nextchar)) {
+                StringBuilder number = new StringBuilder();
+                number.append((char) nextchar);
 
-              
-                // read all numbers before point or 'e'
-                while (Character.isDigit(peekChar()) && peekChar() > -1) {
-                    // read current number
-                    x = getChar();
-
-                    // if not end of input
-                    if (x != -1) {
-                        // add current char
-                        sb.append((char) x);
-                    }
-                }
-                
-                if (peekChar() == '.') {
-                    // read point
-                    x = getChar();
-                    sb.append((char) x);
+                while (Character.isDigit(peekChar())) {
+                    nextchar =getChar();
+                    number.append((char) nextchar);
                     
+                    
+                    
+                }
+                if (( peekChar()) == '.') {
+                   nextchar = getChar();
+                    number.append((char) nextchar);
 
-                    boolean numberAfterPoint = false;
-
-                    // read all numbers before 'e'
-                    while (Character.isDigit(peekChar()) && peekChar() > -1) {
-                        numberAfterPoint = true;
-                        // read current number
-                        x = getChar();
-
-                        // if not end of input
-                        if (x != -1) {
-                            // add current char
-                            sb.append((char) x);
-                        }
-                        
- 
+                    while (Character.isDigit( peekChar())) {
+                       nextchar = getChar();
+                        number.append((char) nextchar);
                     }
                     
-                    if (!numberAfterPoint || peekChar() == '.' ) {
-                        throw new IllegalArgumentException("Illegal float number");
-                    }
-                   
                 }
-              
+
                 if (peekChar() == 'e' || peekChar() == 'E') {
                     // read e
-                     x = getChar();
+                     nextchar = getChar();
                     // Add e
-                    sb.append((char) x);
+                    number.append((char) nextchar);
 
                     if (peekChar() == '-') {
                         // read minus
-                        x = getChar();
-                        sb.append((char) x);
+                        nextchar = getChar();
+                        number.append((char) nextchar);
                     }
 
-                    boolean numberAfterExponent = false;
+                   
 
                    
                     // read all numbers after 'e'
-                    while (Character.isDigit( peekChar()) && peekChar() > -1 ) {
-                        numberAfterExponent = true;
+                    while (Character.isDigit( peekChar())  ) {
+                        
                         
                         // read current number
-                        x = getChar();
+                        nextchar = getChar();
                     
 
                         // if not end of input
-                        if (x != -1) {
+                      
                             // add current char
-                            sb.append((char) x);
-                        }
+                            number.append((char) nextchar);
+                        
                     }
-                    if (!numberAfterExponent || peekChar() == '.' || peekChar() == 'e' || peekChar() == 'E') {
+                    if (!Character.isDigit(nextchar) || peekChar() == '.' || peekChar() == 'e' || peekChar() == 'E') {
                         throw new IllegalArgumentException("Illegal float number");
                     }
-                }
-                nextValue = Float.valueOf(sb.toString());
-                return Token.NUMBER;
-            }
-            throw new IllegalArgumentException("Illegal input character \"" + (char) x + "\"");
-        } catch (IOException e) {
+                    
 
-            throw new UncheckedIOException(e);
+                } 
+
+               this.nextValue = Float.valueOf(number.toString());
+                return Token.NUMBER;
+                 
+                 
+                
+            } else{
+                  throw new IllegalArgumentException("Illegal input character \"=\"");
+            }
+            
+            
+          
+        } catch (IOException e) {
+           throw new UncheckedIOException(e);
         }
+
     }
+
 
     Token getToken() {
         // Roughly 2 lines of implementation
-        Token r = peekToken();
-        nextToken = null;
-        return r;
-    }
 
-    int readChar(boolean reset) throws IOException {
-       
-        reader.mark(1);
-        int r = reader.read();
-         if (reset) {
-            reader.reset();
-        }
-         
-          
-        
-        return r;
+        Token token = peekToken();
+        nextToken = null;
+        return token;
+
     }
 
     Token peekToken() {
         // Roughly 1 lines of implementation
         if (nextToken == null) {
-            nextToken = scanToken();
+            nextToken= scanToken();
         }
         return nextToken;
+
     }
 
     Object peekValue() {
         // Roughly 1 lines of implementation
         return this.nextValue;
+
     }
 
     private int peekChar() throws IOException {
-        // Roughly 1 lines of implementation
         return readChar(true);
+    }
+
+     int readChar(boolean reset) throws IOException {      
+        reader.mark(1);
+        int r = reader.read();
+         if (reset) {
+            reader.reset();
+        }                           
+        return r;
     }
 }
